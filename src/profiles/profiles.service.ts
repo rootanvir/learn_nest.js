@@ -1,3 +1,4 @@
+import { NotFoundException } from '@nestjs/common';
 import { Injectable } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import { CreateProfileDto } from './dto/create-profile.dto';
@@ -22,13 +23,17 @@ export class ProfilesService {
             description: "This is description of Matty Harison"
         },
     ];
-    findAll(){
+    findAll() {
         return this.profiles;
     }
-    findOne(id:string){
-        return this.profiles.find((profile) => profile.id === id);
+    findOne(id: string) {
+        const matchingProfile = this.profiles.find((profile) => profile.id === id);
+        if (!matchingProfile) {
+            throw new Error(`Profile with id : ${id} not found.`);
+        }
+        return matchingProfile;
     }
-    create(createProfileDto: CreateProfileDto){
+    create(createProfileDto: CreateProfileDto) {
         const createdProfile = {
             id: randomUUID(),
             ...createProfileDto
@@ -36,16 +41,27 @@ export class ProfilesService {
         this.profiles.push(createdProfile);
         return createdProfile;
     }
-    update(id:string,updateProfileDto : UpdateProfileDto){
+    update(id: string, updateProfileDto: UpdateProfileDto) {
         const matchingProfile = this.profiles.find(
             (existingProfile) => existingProfile.id == id
         );
-        if( !matchingProfile){
-            return {};
+        if (!matchingProfile) {
+            throw new NotFoundException(`Profile with id: ${id} not found`)
         }
         matchingProfile.name = updateProfileDto.name;
         matchingProfile.description = updateProfileDto.description;
 
         return matchingProfile;
+    }
+    remove(id: string): void {
+        const matchingProfileIndex = this.profiles.findIndex(
+            (profile) => profile.id === id
+        );
+
+        if (matchingProfileIndex === -1) {
+            throw new NotFoundException(`Profile with id: ${id} not found`);
+        }
+        this.profiles.splice(matchingProfileIndex, 1);
+
     }
 }

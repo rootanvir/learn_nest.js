@@ -1,6 +1,6 @@
 #!/bin/bash
 
-curl -X PUT -i http://localhost:3000/profiles/sd89jsdf \
+curl -X PUT -i http://localhost:3000/profiles/89e83d93-c8c0-4fe8-b15e-dfbd6a49668b \
   -H "Content-Type: application/json" \
   -d '{
     "name": "Kai",
